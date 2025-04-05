@@ -1,0 +1,1 @@
+add_subdirectory(finance_tracker)
