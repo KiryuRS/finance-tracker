@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <source_location>
 #include <string_view>
 
@@ -62,7 +63,8 @@ template <typename T>
 consteval std::string_view templateless_type_to_str()
 {
     constexpr std::string_view full_type = full_type_to_str<T>();
-    size_t levels = 0, pos = std::string_view::npos;
+    size_t levels                        = 0;
+    size_t pos                           = std::string_view::npos;
         for (size_t i = 0; i != full_type.length(); ++i) {
             char c = full_type[i];
             if (c == '<')
@@ -74,5 +76,9 @@ consteval std::string_view templateless_type_to_str()
         }
     return pos == std::string_view::npos ? full_type : full_type.substr(0, pos);
 }
+
+template <typename Type, typename Compare>
+concept same_as_instance =
+    (templateless_type_to_str<std::remove_cvref_t<Type>>() == templateless_type_to_str<std::remove_cvref_t<Compare>>());
 
 } // namespace fntr::utils
