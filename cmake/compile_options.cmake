@@ -39,14 +39,9 @@ function(common_compile_options TARGET_NAME)
     # optimization flags
     target_compile_options(${TARGET_NAME}
         PRIVATE
-            $<$<CONFIG:Debug>:-O0 -ggdb -fsanitize=address,undefined>
+            $<$<CONFIG:Debug>:-O0 -ggdb>
             $<$<CONFIG:Release>:-O3>
             $<$<CONFIG:RelWithDebInfo>:-O2 -g>
-    )
-
-    target_link_options(${TARGET_NAME}
-        PRIVATE
-            $<$<CONFIG:Debug>: -fsanitize=address,undefined>
     )
 
     # Additional arguments

@@ -9,13 +9,13 @@ namespace fntr::logging {
 
 enum class log_level : int
 {
-    trace = spdlog::level::level_enum::trace,
-    debug = spdlog::level::level_enum::debug,
-    info = spdlog::level::level_enum::info,
-    warn = spdlog::level::level_enum::warn,
-    error = spdlog::level::level_enum::err,
+    trace    = spdlog::level::level_enum::trace,
+    debug    = spdlog::level::level_enum::debug,
+    info     = spdlog::level::level_enum::info,
+    warn     = spdlog::level::level_enum::warn,
+    error    = spdlog::level::level_enum::err,
     critical = spdlog::level::level_enum::critical,
-    off = spdlog::level::level_enum::off,
+    off      = spdlog::level::level_enum::off,
 };
 
 struct file_config
@@ -31,4 +31,4 @@ struct config
     bool stdout;
 };
 
-}
+} // namespace fntr::logging

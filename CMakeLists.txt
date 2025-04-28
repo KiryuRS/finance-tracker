@@ -7,6 +7,8 @@ project(finance-tracker
 
 include("${PROJECT_SOURCE_DIR}/cmake/compile_options.cmake")
 include("${PROJECT_SOURCE_DIR}/cmake/package.cmake")
+include("${PROJECT_SOURCE_DIR}/cmake/format.cmake")
+include("${PROJECT_SOURCE_DIR}/cmake/linters.cmake")
 
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -19,4 +21,8 @@ if (CCACHE_FOUND)
     message(STATUS "Using ccache ...")
 endif()
 
+enable_formatting()
+enable_linters()
+
 add_subdirectory(src)
+add_subdirectory(tests)

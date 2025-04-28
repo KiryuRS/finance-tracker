@@ -1,0 +1,6 @@
+.build/
+.vscode/
+.idea/
+CMakeUserPresets.json
+conan_provider.cmake
+cmake-build-debug/

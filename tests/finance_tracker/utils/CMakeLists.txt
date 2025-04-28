@@ -1,0 +1,3 @@
+add_unit_test(test_static_string)
+add_unit_test(test_static_vector)
+add_unit_test(test_type_traits)

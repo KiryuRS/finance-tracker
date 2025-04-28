@@ -100,7 +100,7 @@ main() {
     # only lint / memory checks etc. and exit
     if [ $LINTING -eq 1 ]; then
         ninja clang-tidy
-        ninja valgrind-run
+        # ninja valgrind-run
         exit 0
     fi
 

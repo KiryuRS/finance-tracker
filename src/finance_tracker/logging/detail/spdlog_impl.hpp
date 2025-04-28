@@ -10,7 +10,7 @@ namespace formatter {
 
 class hostname_flag : public spdlog::custom_flag_formatter
 {
-public:
+  public:
     void format(const spdlog::details::log_msg&, const std::tm&, spdlog::memory_buf_t& dest) override
     {
         const auto& hostname = utils::hardware::application_hostname;
@@ -23,6 +23,6 @@ public:
     }
 };
 
-}
+} // namespace formatter
 
-}
+} // namespace fntr::logging::detail
