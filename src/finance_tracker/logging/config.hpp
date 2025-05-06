@@ -4,6 +4,7 @@
 
 #include <filesystem>
 #include <optional>
+#include <unordered_set>
 
 namespace fntr::logging {
 
@@ -24,11 +25,17 @@ struct file_config
     std::optional<std::string> symlink;
 };
 
+struct logging_filters
+{
+    std::unordered_set<std::string> modules;
+};
+
 struct config
 {
     std::optional<file_config> daily_file;
     log_level level;
     bool stdout;
+    std::optional<logging_filters> filters;
 };
 
 } // namespace fntr::logging

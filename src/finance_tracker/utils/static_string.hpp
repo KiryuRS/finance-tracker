@@ -12,7 +12,7 @@ class basic_static_string : public static_vector<CharT, Size>
 {
     using base = static_vector<CharT, Size>;
 
-  public:
+public:
     using value_type      = typename base::value_type;
     using size_type       = typename base::size_type;
     using reference       = typename base::reference;
@@ -20,7 +20,7 @@ class basic_static_string : public static_vector<CharT, Size>
     using pointer         = typename base::pointer;
     using const_pointer   = typename base::const_pointer;
 
-  public:
+public:
     explicit constexpr basic_static_string() = default;
 
     explicit constexpr basic_static_string(std::basic_string_view<CharT> str)
@@ -39,7 +39,7 @@ class basic_static_string : public static_vector<CharT, Size>
         : base(data)
     {}
 
-  public:
+public:
     [[nodiscard]] constexpr operator std::string_view() const { return {base::data_, Size}; }
 
     friend std::ostream& operator<<(std::ostream& os, const basic_static_string& bss)
@@ -47,7 +47,7 @@ class basic_static_string : public static_vector<CharT, Size>
         return os << static_cast<std::string_view>(bss);
     }
 
-  public:
+public:
     auto operator<=>(const basic_static_string&) const = default;
 };
 

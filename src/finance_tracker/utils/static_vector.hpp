@@ -16,7 +16,7 @@ template <typename T, size_t Size>
     requires concepts::trivially_copyable<T> && std::default_initializable<T>
 class static_vector_base
 {
-  public:
+public:
     using value_type      = T;
     using size_type       = std::size_t;
     using reference       = value_type&;
@@ -24,7 +24,7 @@ class static_vector_base
     using pointer         = value_type*;
     using const_pointer   = const value_type*;
 
-  public:
+public:
     template <typename U>
     struct iterator_impl
     {
@@ -101,23 +101,23 @@ class static_vector_base
 
         auto operator<=>(const iterator_impl&) const = default;
 
-      private:
+    private:
         value_type* ptr_;
     };
 
     using iterator       = iterator_impl<value_type>;
     using const_iterator = iterator_impl<const value_type>;
 
-  public:
+public:
     constexpr static_vector_base()
-        : data_{},
-          length_{0}
+        : data_{}
+        , length_{0}
     {}
 
     template <std::ranges::range U>
     explicit constexpr static_vector_base(const U& container)
-        : data_{},
-          length_{std::ranges::size(container)}
+        : data_{}
+        , length_{std::ranges::size(container)}
     {
         if (length_ > Size) throw std::out_of_range("container size exceeds capacity of static_vector");
         initialize_data(container);
@@ -126,42 +126,42 @@ class static_vector_base
     template <std::size_t N>
         requires(N <= Size)
     explicit constexpr static_vector_base(const T (&data)[N])
-        : data_{},
-          length_{N}
+        : data_{}
+        , length_{N}
     {
         initialize_data(std::span{data, N});
     }
 
     constexpr static_vector_base(std::initializer_list<T> list)
-        : data_{},
-          length_{list.size()}
+        : data_{}
+        , length_{list.size()}
     {
         if (length_ > Size) throw std::out_of_range("container size exceeds capacity of static_vector");
         initialize_data(list);
     }
 
     constexpr static_vector_base(const static_vector_base& other)
-        : data_{},
-          length_{other.length_}
+        : data_{}
+        , length_{other.length_}
     {
         initialize_data(std::span{other.data_, length_});
     }
 
     constexpr static_vector_base(static_vector_base&& other) noexcept
-        : data_{std::exchange(other.data_, nullptr)},
-          length_{std::exchange(other.length_, 0)}
+        : data_{std::exchange(other.data_, nullptr)}
+        , length_{std::exchange(other.length_, 0)}
     {}
 
     auto operator<=>(const static_vector_base& other) const = default;
 
-  public:
+public:
     [[nodiscard]] constexpr size_type size() const { return length_; }
 
     [[nodiscard]] constexpr bool full() const { return length_ >= Size; }
 
     [[nodiscard]] constexpr bool empty() const { return length_ == 0; }
 
-  public:
+public:
     iterator begin() { return iterator{data_}; }
 
     const_iterator begin() const { return const_iterator{data_}; }
@@ -174,7 +174,7 @@ class static_vector_base
 
     const_iterator cend() const { return const_iterator{data_ + length_}; }
 
-  private:
+private:
     constexpr void initialize_data(const std::ranges::range auto& out_data)
     {
         // TODO: Use constexpr placement new in C++26
@@ -182,7 +182,7 @@ class static_vector_base
         std::ranges::for_each(out_data, [this, i = 0](const auto& value) mutable { data_[i++] = value; });
     }
 
-  protected:
+protected:
     static_assert(std::contiguous_iterator<iterator>);
     static_assert(std::contiguous_iterator<const_iterator>);
 
@@ -198,7 +198,7 @@ class static_vector : public detail::static_vector_base<T, Size>
 {
     using base = detail::static_vector_base<T, Size>;
 
-  public:
+public:
     using value_type      = typename base::value_type;
     using size_type       = typename base::size_type;
     using reference       = typename base::reference;
