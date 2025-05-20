@@ -1,5 +1,6 @@
 #pragma once
 
+#include <finance_tracker/concepts/traits.hpp>
 #include <finance_tracker/utils/type_traits.hpp>
 #include <finance_tracker/utils/utility.hpp>
 
@@ -35,6 +36,16 @@ using reflection_type = decltype(get_tuple_descriptors<T>());
 
 template <typename T>
 std::string to_string(const T&);
+
+// operator<< for containers
+std::ostream& operator<<(std::ostream& os, const concepts::same_as_vector auto& rhs)
+{
+    std::string delimiter;
+    os << '[';
+    for (const auto& elem : rhs)
+        os << std::exchange(delimiter, ", ") << elem;
+    return os << ']';
+}
 
 } // namespace fntr::reflect
 

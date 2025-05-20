@@ -33,8 +33,8 @@ struct logging_filters
 struct config
 {
     std::optional<file_config> daily_file;
-    log_level level;
-    bool stdout;
+    log_level level{log_level::info};
+    bool stdout{true};
     std::optional<logging_filters> filters;
 };
 

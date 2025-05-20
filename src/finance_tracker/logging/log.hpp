@@ -45,7 +45,7 @@ private:
 };
 
 // main initialize function for logging
-void init(const logging::config& conf);
+void init(const logging::config& conf = {});
 
 // creates a logger to be written to sink
 // if a name already exist, it will return the existing logger

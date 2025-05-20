@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <concepts>
+#include <vector>
 
 namespace fntr::concepts {
 
@@ -31,6 +32,16 @@ struct is_chrono_date<std::chrono::time_point<T, std::chrono::duration<Rep, std:
     static constexpr bool value = Num == DAY_IN_SECONDS;
 };
 
+template <typename T>
+struct is_vector_like : std::false_type
+{
+};
+
+template <typename ... Args>
+struct is_vector_like<std::vector<Args...>> : std::true_type
+{
+};
+
 } // namespace detail
 
 template <typename Enum, typename T = std::remove_cvref_t<Enum>>
@@ -47,6 +58,12 @@ concept same_as_date = detail::is_chrono_date<std::remove_cvref_t<T>>::value;
 
 template <typename T>
 concept same_as_built_in_type = std::integral<T> || std::floating_point<T>;
+
+template <typename T>
+concept same_as_class_type = std::is_class_v<std::remove_cvref_t<T>>;
+
+template <typename T>
+concept same_as_vector = detail::is_vector_like<std::remove_cvref_t<T>>::value;
 
 template <typename T>
 concept trivially_moveable = std::is_trivially_move_assignable_v<T>;
