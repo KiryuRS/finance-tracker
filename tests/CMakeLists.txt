@@ -16,6 +16,7 @@ function(add_unit_test TEST_FILENAME_WITHOUT_CPP)
             GTest::gtest
             fntr_interface
             pthread
+            -l:libgmock.a # TODO: Resolve without specifying this library
     )
     add_test(${TEST_FILENAME_WITHOUT_CPP} "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TEST_FILENAME_WITHOUT_CPP}")
 endfunction()

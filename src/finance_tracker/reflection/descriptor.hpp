@@ -38,13 +38,39 @@ template <typename T>
 std::string to_string(const T&);
 
 // operator<< for containers
-std::ostream& operator<<(std::ostream& os, const concepts::same_as_vector auto& rhs)
+template <concepts::container_like T>
+std::ostream& operator<<(std::ostream& os, [[maybe_unused]] const T& rhs)
 {
     std::string delimiter;
-    os << '[';
-    for (const auto& elem : rhs)
-        os << std::exchange(delimiter, ", ") << elem;
-    return os << ']';
+        if constexpr (concepts::same_as_vector<T>) {
+            os << '[';
+            for (const auto& elem : rhs)
+                os << std::exchange(delimiter, ", ") << elem;
+            os << ']';
+        }
+        else if constexpr (concepts::same_as_unordered_map<T>) {
+            os << '[';
+            for (const auto& [key, value] : rhs)
+                os << std::exchange(delimiter, ", ") << "{" << key << ":" << value << "}";
+            os << ']';
+        }
+        else if constexpr (concepts::same_as_unordered_set<T>) {
+            os << '{';
+            for (const auto& elem : rhs)
+                os << std::exchange(delimiter, ", ") << elem;
+            os << '}';
+        }
+        else {
+            static_assert(concepts::always_false<T>);
+        }
+    return os;
+}
+
+// operator<< for optional
+std::ostream& operator<<(std::ostream& os, const concepts::same_as_optional auto& rhs)
+{
+    if (rhs.has_value()) return os << *rhs;
+    return os << "<not-set>";
 }
 
 } // namespace fntr::reflect
