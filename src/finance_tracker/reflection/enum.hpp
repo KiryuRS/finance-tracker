@@ -18,7 +18,6 @@
 
 #define NUM_ARGS(...) std::array{BOOST_PP_SEQ_FOR_EACH(ENUM_STR, _, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))}.size()
 
-// TODO: Move to reflect file?
 namespace fntr::reflect {
 
 template <fntr::concepts::same_as_enum Enum>
@@ -39,7 +38,7 @@ struct enum_metadata;
             ENUM_IDENTITY_NAMESPACE, enum_namespace::enum_name, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)                  \
         )};                                                                                                            \
         static inline constexpr std::array<std::string_view, size> enum_str_array      = {                             \
-            BOOST_PP_SEQ_FOR_EACH(ENUM_STR, enum_namespace::enum_name, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))};   \
+            BOOST_PP_SEQ_FOR_EACH(ENUM_STR, enum_namespace::enum_name, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))};        \
     };                                                                                                                 \
     inline constexpr std::string_view to_string(enum_namespace::enum_name x)                                           \
     {                                                                                                                  \

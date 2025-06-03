@@ -55,7 +55,7 @@ using namespace ::testing;
 TEST(test_yaml_conversion, test_serializable_built_in_type_wrapped)
 {
     const std::string& yaml_str = R"(
-built_in:
+built_in_types:
     floating_value: 111.2
     integer_value: 20
     char_value: 'A'
@@ -63,7 +63,7 @@ built_in:
     long_value: 99712
 )";
 
-    const auto serialized = yaml::serialize_from<mocks::built_in_types>(yaml_str, "built_in");
+    const auto serialized = yaml::serialize_from<mocks::built_in_types>(yaml_str);
     const mocks::built_in_types expected{
         .floating_value = 111.2f, .integer_value = 20, .char_value = 'A', .double_value = 3.14, .long_value = 99712};
     EXPECT_EQ(serialized, expected);
@@ -72,7 +72,7 @@ built_in:
 TEST(test_yaml_conversion, test_serializable_complex_type)
 {
     const std::string& yaml_str = R"(
-complex:
+complex_types:
     vector: [1,2,3,4,5]
     s:
         value_1: 10
@@ -83,7 +83,7 @@ complex:
     optional: 69.69
 )";
 
-    const auto serialized = yaml::serialize_from<mocks::complex_types>(yaml_str, "complex");
+    const auto serialized = yaml::serialize_from<mocks::complex_types>(yaml_str);
     EXPECT_THAT(serialized.vector, ElementsAre(1, 2, 3, 4, 5));
     EXPECT_THAT(serialized.unordered_map, UnorderedElementsAre(Pair(1, 10), Pair(2, 20)));
     EXPECT_EQ(serialized.optional, std::optional<double>(69.69));

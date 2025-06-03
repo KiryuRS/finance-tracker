@@ -1,5 +1,7 @@
 #pragma once
 
+#include <finance_tracker/reflection/descriptor.hpp>
+
 #include <spdlog/common.h>
 
 #include <filesystem>
@@ -30,12 +32,21 @@ struct logging_filters
     std::unordered_set<std::string> modules;
 };
 
+struct backtrace_config
+{
+    bool enabled{false};
+    uint64_t messages_count{32};
+};
+
 struct config
 {
     std::optional<file_config> daily_file;
     log_level level{log_level::info};
     bool stdout{true};
     std::optional<logging_filters> filters;
+    std::optional<backtrace_config> backtrace;
 };
 
 } // namespace fntr::logging
+
+FNTR_GENERATE_DESCRIPTORS(fntr::logging::config, (daily_file, level, stdout, filters, backtrace));

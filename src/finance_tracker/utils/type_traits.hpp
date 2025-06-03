@@ -42,14 +42,16 @@ consteval std::string_view short_type_to_str()
 {
     constexpr std::string_view full_type = full_type_to_str<T>();
     size_t levels = 0, pos = std::string_view::npos;
-        for (size_t i = 0; i != full_type.length(); ++i) {
+        for (size_t i = 0; i != full_type.length(); ++i)
+        {
             char c = full_type[i];
             if (c == '<')
                 ++levels;
             else if (c == '>')
                 --levels;
 
-            if (levels == 0 && c == ':') pos = i;
+            if (levels == 0 && c == ':')
+                pos = i;
         }
     return pos == std::string_view::npos ? full_type : full_type.substr(pos + 1);
 }
@@ -65,20 +67,18 @@ consteval std::string_view templateless_type_to_str()
     constexpr std::string_view full_type = full_type_to_str<T>();
     size_t levels                        = 0;
     size_t pos                           = std::string_view::npos;
-        for (size_t i = 0; i != full_type.length(); ++i) {
+        for (size_t i = 0; i != full_type.length(); ++i)
+        {
             char c = full_type[i];
             if (c == '<')
                 ++levels;
             else if (c == '>')
                 --levels;
 
-            if (levels == 1 && c == '<') pos = i;
+            if (levels == 1 && c == '<')
+                pos = i;
         }
     return pos == std::string_view::npos ? full_type : full_type.substr(0, pos);
 }
-
-template <typename Type, typename Compare>
-concept same_as_instance =
-    (templateless_type_to_str<std::remove_cvref_t<Type>>() == templateless_type_to_str<std::remove_cvref_t<Compare>>());
 
 } // namespace fntr::utils

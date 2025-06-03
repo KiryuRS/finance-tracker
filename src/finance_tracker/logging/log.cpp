@@ -18,12 +18,14 @@ std::vector<spdlog::sink_ptr> create_sinks(const logging::config& conf)
         spdlog::sinks::daily_file_sink<spdlog::details::null_mutex, spdlog::sinks::daily_filename_format_calculator>;
 
     std::vector<spdlog::sink_ptr> sinkers;
-    if (conf.stdout) sinkers.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
+    if (conf.stdout)
+        sinkers.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
 
-        if (conf.daily_file) {
-            // TODO: Handle symlink
-            sinkers.push_back(std::make_shared<daily_file_sink_st>(conf.daily_file->filepath, 0, 0));
-        }
+    if (conf.daily_file)
+    {
+        // TODO: Handle symlink
+        sinkers.push_back(std::make_shared<daily_file_sink_st>(conf.daily_file->filepath, 0, 0));
+    }
     return sinkers;
 }
 
@@ -42,6 +44,9 @@ spdlog_manager::spdlog_manager(const logging::config& conf)
         "[%Y-%m-%dT%H:%M:%S.%e][%P][%t][%h][%^%l%$][%n] %v"
     );
     logger->set_formatter(std::move(pattern_formatter));
+    if (config_.backtrace && config_.backtrace->enabled)
+        logger->enable_backtrace(config_.backtrace->messages_count);
+
     spdlog::set_level(static_cast<spdlog::level::level_enum>(config_.level));
     spdlog::register_logger(logger);
 }
@@ -57,7 +62,6 @@ bool spdlog_manager::should_log(std::string_view logger_name, log_level level)
 {
     if (!global_logger->config_.filters || global_logger->config_.filters->modules.count(std::string{logger_name}))
         return should_log(level);
-
     return false;
 }
 
@@ -68,7 +72,11 @@ spdlog_manager::spdlog_module spdlog_manager::create_logger(std::string_view log
                          std::string{logger_name}, global_logger->sinks_.begin(), global_logger->sinks_.end()
                      )
     );
-    return {logger_name, *(iter->second)};
+    // backtrace should affect for every logger
+    auto& logger = *(iter->second);
+    if (global_logger->config_.backtrace && global_logger->config_.backtrace->enabled)
+        logger.enable_backtrace(global_logger->config_.backtrace->messages_count);
+    return {logger_name, logger};
 }
 
 spdlog_manager::spdlog_module spdlog_manager::get_logger(std::string_view logger_name)
@@ -78,7 +86,8 @@ spdlog_manager::spdlog_module spdlog_manager::get_logger(std::string_view logger
 
 void init(const logging::config& conf)
 {
-    if (!spdlog_manager::global_logger) spdlog_manager::global_logger = std::make_unique<spdlog_manager>(conf);
+    if (!spdlog_manager::global_logger)
+        spdlog_manager::global_logger = std::make_unique<spdlog_manager>(conf);
 }
 
 spdlog_manager::spdlog_module create_logger(std::string_view logger_name)

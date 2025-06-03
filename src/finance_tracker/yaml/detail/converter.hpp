@@ -21,6 +21,10 @@ struct convert<T>
 
     static bool decode(const Node& node, T& rhs)
     {
+        /*
+         * there's no other better spot to do validation, so as part of the decoding logic, we will be parsing t
+         */
+
         ::fntr::utils::template_for_each<::fntr::reflect::reflection_type<T>>([&node, &rhs]<typename Descriptor>() {
             using member_type = typename Descriptor::member_type;
 

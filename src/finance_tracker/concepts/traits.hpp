@@ -88,12 +88,16 @@ struct is_variant_like<std::variant<Args...>> : std::true_type
 } // namespace detail
 
 template <typename Container, typename T = std::remove_cvref_t<Container>>
-concept container_like = !
-std::same_as<std::string, T> && !std::same_as<std::string_view, T> && requires(T x) {
-                                                                          typename T::value_type;
-                                                                          typename T::allocator_type;
-                                                                          requires std::ranges::range<T>;
-                                                                      };
+concept container_like = requires(T)
+{
+    // though std::string is something like a container, but we don't really regard it as one
+    // hence we should ensure that its not a std::string or std::string_view
+    requires !std::same_as<std::string, T>;
+    requires !std::same_as<std::string_view, T>;
+    typename T::value_type;
+    typename T::allocator_type;
+    requires std::ranges::range<T>;
+};
 
 template <typename Enum, typename T = std::remove_cvref_t<Enum>>
 concept same_as_enum = std::is_enum_v<T>;

@@ -42,34 +42,39 @@ template <concepts::container_like T>
 std::ostream& operator<<(std::ostream& os, [[maybe_unused]] const T& rhs)
 {
     std::string delimiter;
-        if constexpr (concepts::same_as_vector<T>) {
-            os << '[';
-            for (const auto& elem : rhs)
-                os << std::exchange(delimiter, ", ") << elem;
-            os << ']';
-        }
-        else if constexpr (concepts::same_as_unordered_map<T>) {
-            os << '[';
-            for (const auto& [key, value] : rhs)
-                os << std::exchange(delimiter, ", ") << "{" << key << ":" << value << "}";
-            os << ']';
-        }
-        else if constexpr (concepts::same_as_unordered_set<T>) {
-            os << '{';
-            for (const auto& elem : rhs)
-                os << std::exchange(delimiter, ", ") << elem;
-            os << '}';
-        }
-        else {
-            static_assert(concepts::always_false<T>);
-        }
+    if constexpr (concepts::same_as_vector<T>)
+    {
+        os << '[';
+        for (const auto& elem : rhs)
+            os << std::exchange(delimiter, ", ") << elem;
+        os << ']';
+    }
+    else if constexpr (concepts::same_as_unordered_map<T>)
+    {
+        os << '[';
+        for (const auto& [key, value] : rhs)
+            os << std::exchange(delimiter, ", ") << "{" << key << ":" << value << "}";
+        os << ']';
+    }
+    else if constexpr (concepts::same_as_unordered_set<T>)
+    {
+        os << '{';
+        for (const auto& elem : rhs)
+            os << std::exchange(delimiter, ", ") << elem;
+        os << '}';
+    }
+    else
+    {
+        static_assert(concepts::always_false<T>);
+    }
     return os;
 }
 
 // operator<< for optional
 std::ostream& operator<<(std::ostream& os, const concepts::same_as_optional auto& rhs)
 {
-    if (rhs.has_value()) return os << *rhs;
+    if (rhs.has_value())
+        return os << *rhs;
     return os << "<not-set>";
 }
 
@@ -92,7 +97,17 @@ std::ostream& operator<<(std::ostream& os, const concepts::same_as_optional auto
 
 #define CREATE_DESCRIPTOR(r, Class, Member) detail::descriptor<Class, &Class::Member>{},
 
-#define FNTR_REFLECT(Class, ...)                                                                                       \
+/*
+ * This should be used for any UDT that we want to reflect upon
+ * Usage: FNTR_GENERATE_DESCRIPTORS(somenamespace::class, (var_1, var_2, var_3))
+ *
+ * The following will come for free:
+ * - fntr::reflect::reflection_type => typedef of a tuple of descriptors for the UDT
+ * - fntr::reflect::get_tuple_descriptors => a function that returns a tuple of descriptors for the UDT
+ * - fntr::reflect::get_member<Descriptor> => a function that returns a pointer to that member variable for the UDT
+ *      NOTE: It is not possible to use this outside of fntr::reflect scope - maybe because its not declared. TODO: Fix me
+ */
+#define FNTR_GENERATE_DESCRIPTORS(Class, ...)                                                                          \
     namespace fntr::reflect {                                                                                          \
     namespace detail {                                                                                                 \
     BOOST_PP_SEQ_FOR_EACH_I(MEMBER_DESCRIPTOR, Class, BOOST_PP_TUPLE_TO_SEQ(__VA_ARGS__));                             \
@@ -115,7 +130,20 @@ std::ostream& operator<<(std::ostream& os, const concepts::same_as_optional auto
     {                                                                                                                  \
         return object.*(Descriptor::mem_ptr);                                                                          \
     }                                                                                                                  \
-                                                                                                                       \
+    } /* namespace fntr::reflect */
+
+/*
+ * This should be used for any UDT that we want to reflect upon
+ * Usage: FNTR_GENERATE_FORMATTERS(somenamespace::class, (var_1, var_2, var_3))
+ *
+ * WARN: FNTR_GENERATE_DESCRIPTORS *MUST* be called before using this!
+ * The following will come for free:
+ * - fntr::reflect::to_string => a function that returns a human readable string for the UDT
+ * - operator<< => overload for the UDT
+ * - formatter => possible to use on std::format for the UDT
+ */
+#define FNTR_GENERATE_FORMATTERS(Class, ...)                                                                           \
+    namespace fntr::reflect {                                                                                          \
     template <>                                                                                                        \
     std::string to_string<Class>(const Class& object)                                                                  \
     {                                                                                                                  \
@@ -148,3 +176,15 @@ std::ostream& operator<<(std::ostream& os, const concepts::same_as_optional auto
         }                                                                                                              \
     };                                                                                                                 \
     } /* namespace std */
+
+/*
+ * This combines FNTR_GENERATE_DESCRIPTORS and FNTR_GENERATE_FORMATTERS
+ * Usage: FNTR_REFLECT(somenamespace::class, (var_1, var_2, var_3))
+ *
+ * See above comments for explanations.
+ * In most cases you would use FNTR_REFLECT. FNTR_GENERATE_DESCRIPTORS is used when you just want reflection,
+ * but not the formatters and string part
+ */
+#define FNTR_REFLECT(Class, ...)                    \
+    FNTR_GENERATE_DESCRIPTORS(Class, __VA_ARGS__)   \
+    FNTR_GENERATE_FORMATTERS(Class, __VA_ARGS__)

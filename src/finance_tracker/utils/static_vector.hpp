@@ -240,7 +240,8 @@ public:
     template <typename Self>
     [[nodiscard]] decltype(auto) at(this Self&& self, size_type index)
     {
-        if (index >= self.length_) throw std::out_of_range("index beyond length");
+        if (index >= self.length_)
+            throw std::out_of_range("index beyond length");
         return std::forward<Self>(self).data_[index];
     }
 };
