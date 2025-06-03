@@ -119,7 +119,8 @@ public:
         : data_{}
         , length_{std::ranges::size(container)}
     {
-        if (length_ > Size) throw std::out_of_range("container size exceeds capacity of static_vector");
+        if (length_ > Size)
+            throw std::out_of_range("container size exceeds capacity of static_vector");
         initialize_data(container);
     }
 
@@ -136,7 +137,8 @@ public:
         : data_{}
         , length_{list.size()}
     {
-        if (length_ > Size) throw std::out_of_range("container size exceeds capacity of static_vector");
+        if (length_ > Size)
+            throw std::out_of_range("container size exceeds capacity of static_vector");
         initialize_data(list);
     }
 

@@ -42,17 +42,17 @@ consteval std::string_view short_type_to_str()
 {
     constexpr std::string_view full_type = full_type_to_str<T>();
     size_t levels = 0, pos = std::string_view::npos;
-        for (size_t i = 0; i != full_type.length(); ++i)
-        {
-            char c = full_type[i];
-            if (c == '<')
-                ++levels;
-            else if (c == '>')
-                --levels;
+    for (size_t i = 0; i != full_type.length(); ++i)
+    {
+        char c = full_type[i];
+        if (c == '<')
+            ++levels;
+        else if (c == '>')
+            --levels;
 
-            if (levels == 0 && c == ':')
-                pos = i;
-        }
+        if (levels == 0 && c == ':')
+            pos = i;
+    }
     return pos == std::string_view::npos ? full_type : full_type.substr(pos + 1);
 }
 

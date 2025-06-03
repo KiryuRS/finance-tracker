@@ -28,13 +28,13 @@ public:
     {}
 
     template <typename T = const CharT*>
-        requires(!std::is_array_v<T>) && std::is_pointer_v<T>
+        requires (!std::is_array_v<T>) && std::is_pointer_v<T>
     explicit constexpr basic_static_string(T str)
         : basic_static_string{std::string_view{str}}
     {}
 
     template <std::size_t N>
-        requires(N <= Size)
+        requires (N <= Size)
     constexpr basic_static_string(const CharT (&data)[N])
         : base(data)
     {}
